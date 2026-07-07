@@ -1,6 +1,11 @@
 from fastapi import FastAPI
+from pydantic import BaseModel
 
 app = FastAPI()
+
+class Item(BaseModel):
+    name:str
+    status:str
 
 items = [
     {"id": 1, "name": "Projector", "status": "available"},
@@ -9,6 +14,14 @@ items = [
     {"id": 4, "name": "Ninja Creami", "status": "new"}
 
 ]
+
+@app.get("/version")
+def version():
+    return {
+        "app": "basic-api",
+        "version": "1.0.0"
+    }
+
 
 @app.get("/")
 def home():
@@ -45,3 +58,14 @@ def search_items(q: str):
         if q.lower() in item["name"].lower():
             results.append(item)
     return results
+
+@app.post("/items")
+def add_item(item: Item):
+    new_item = {
+        "id": len(items) + 1,
+        "name": item.name,
+        "status": item.status,
+    }
+
+    items.append(new_item)
+    return new_item
