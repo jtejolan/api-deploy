@@ -13,3 +13,7 @@ def health():
 @app.get("/hello/{name}")
 def hello(name: str):
     return {"message": f"Hello, {name}"}
+
+@app.get("/new")
+def new(name: str):
+    return {"message": f"This is a new endpoint."}
