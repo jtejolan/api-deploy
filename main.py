@@ -37,3 +37,11 @@ def get_item(item_id: int):
             return item
     
     return {"error": "Item not found"}
+
+@app.get("/search")
+def search_items(q: str):
+    results = []
+    for item in items:
+        if q.lower() in item["name"].lower():
+            results.append(item)
+    return results
