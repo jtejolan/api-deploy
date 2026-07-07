@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
+from fastapi import HTTPException
 
 app = FastAPI()
 
@@ -49,7 +50,7 @@ def get_item(item_id: int):
         if item["id"] == item_id:
             return item
     
-    return {"error": "Item not found"}
+    raise HTTPException(status_code=404, detail="Item not found")
 
 @app.get("/search")
 def search_items(q: str):
