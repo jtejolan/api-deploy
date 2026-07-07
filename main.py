@@ -15,5 +15,5 @@ def hello(name: str):
     return {"message": f"Hello, {name}"}
 
 @app.get("/new")
-def new(name: str):
+def new():
     return {"message": f"This is a new endpoint."}
