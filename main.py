@@ -8,6 +8,10 @@ class Item(BaseModel):
     name:str
     status:str
 
+class ItemUpdate(BaseModel):
+    name: str
+    status: str
+
 items = [
     {"id": 1, "name": "Projector", "status": "available"},
     {"id": 2, "name": "Chess Set", "status": "missing pieces"},
@@ -44,6 +48,16 @@ def new():
 def get_items():
     return items
 
+@app.get("/items/search")
+def search_items(q: str):
+    results = []
+
+    for item in items:
+        if q.lower() in item["name"].lower():
+            results.append(item)
+
+    return results
+
 @app.get("/items/{item_id}")
 def get_item(item_id: int):
     for item in items:
@@ -70,3 +84,22 @@ def add_item(item: Item):
 
     items.append(new_item)
     return new_item
+
+@app.put("/items/{item_id}")
+def update_item(item_id: int, updated_item: ItemUpdate):
+    for item in items:
+        if item["id"] == item_id:
+            item["name"] = updated_item.name
+            item["status"] = updated_item.status
+            return item
+
+    raise HTTPException(status_code=404, detail="Item not found")
+
+@app.delete("/items/{item_id}")
+def delete_item(item_id: int):
+    for item in items:
+        if item["id"] == item_id:
+            items.remove(item)
+            return {"message": "Item deleted"}
+
+    raise HTTPException(status_code=404, detail="Item not found")
