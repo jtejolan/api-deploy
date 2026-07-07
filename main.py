@@ -33,7 +33,7 @@ def get_items():
 @app.get("/items/{item_id}")
 def get_item(item_id: int):
     for item in items:
-        if item[id] == item_id:
+        if item["id"] == item_id:
             return item
     
     return {"error": "Item not found"}
