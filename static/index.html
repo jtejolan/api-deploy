@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Lendery Items</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 700px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        form {
+            margin-bottom: 30px;
+        }
+
+        input,
+        select,
+        button {
+            padding: 10px;
+            margin-right: 5px;
+            margin-bottom: 10px;
+        }
+
+        .item {
+            border: 1px solid #cccccc;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 6px;
+        }
+
+        .status {
+            font-weight: bold;
+        }
+
+        #message {
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Lendery Items</h1>
+
+    <h2>Add an item</h2>
+
+    <form id="item-form">
+        <input
+            id="name"
+            type="text"
+            placeholder="Item name"
+            required
+        >
+
+        <select id="status">
+            <option value="available">Available</option>
+            <option value="missing pieces">Missing pieces</option>
+            <option value="damaged">Damaged</option>
+        </select>
+
+        <button type="submit">Add item</button>
+    </form>
+
+    <p id="message"></p>
+
+    <h2>Current items</h2>
+
+    <div id="item-list">
+        Loading items...
+    </div>
+
+    <script>
+        const itemList = document.getElementById("item-list");
+        const itemForm = document.getElementById("item-form");
+        const nameInput = document.getElementById("name");
+        const statusInput = document.getElementById("status");
+        const message = document.getElementById("message");
+
+        async function loadItems() {
+            const response = await fetch("/items");
+            const items = await response.json();
+
+            itemList.innerHTML = "";
+
+            for (const item of items) {
+                const itemElement = document.createElement("div");
+
+                itemElement.className = "item";
+
+                itemElement.innerHTML = `
+                    <strong>${item.name}</strong>
+                    <p>
+                        Status:
+                        <span class="status">${item.status}</span>
+                    </p>
+                    <small>Item ID: ${item.id}</small>
+                `;
+
+                itemList.appendChild(itemElement);
+            }
+        }
+
+        async function addItem(event) {
+            event.preventDefault();
+
+            const newItem = {
+                name: nameInput.value,
+                status: statusInput.value,
+            };
+
+            const response = await fetch("/items", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(newItem),
+            });
+
+            if (!response.ok) {
+                message.textContent = "Something went wrong.";
+                return;
+            }
+
+            message.textContent = "Item added successfully.";
+
+            nameInput.value = "";
+
+            await loadItems();
+        }
+
+        itemForm.addEventListener("submit", addItem);
+
+        loadItems();
+    </script>
+</body>
+</html>

@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
 from fastapi import HTTPException
+from fastapi.staticfiles import StaticFiles
 
 app = FastAPI()
 
@@ -28,7 +29,7 @@ def version():
     }
 
 
-@app.get("/")
+@app.get("/api")
 def home():
     return {"message": "My API is live"}
 
@@ -103,3 +104,10 @@ def delete_item(item_id: int):
             return {"message": "Item deleted"}
 
     raise HTTPException(status_code=404, detail="Item not found")
+
+
+app.mount(
+    "/",
+    StaticFiles(directory="static", html=True),
+    name="static",
+)
